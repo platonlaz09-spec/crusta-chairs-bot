@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Chairs Concierge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 90vh;
+            max-height: 800px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 18px 20px 14px 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .app-header .logo {
+            font-size: 26px;
+        }
+
+        .app-header .title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .app-header .subtitle {
+            font-size: 11px;
+            opacity: 0.7;
+            font-weight: 300;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px 14px 10px 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8f9fc;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c4c9d4;
+            border-radius: 8px;
+        }
+
+        .message {
+            max-width: 92%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+            word-wrap: break-word;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #e8ecf1;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .message.bot .msg-text {
+            color: #1e293b;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #e94560;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message .product-card {
+            margin-top: 10px;
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e8ecf1;
+        }
+
+        .message .product-card img {
+            width: 100%;
+            max-height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #eef1f5;
+            border: 1px solid #e2e6ec;
+        }
+
+        .message .product-card .prod-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .message .product-card .prod-price {
+            color: #e94560;
+            font-weight: 600;
+            font-size: 15px;
+            margin: 4px 0 6px 0;
+        }
+
+        .message .product-card .prod-desc {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .message .product-card .prod-features {
+            font-size: 13px;
+            color: #334155;
+            padding-left: 16px;
+            margin: 4px 0;
+        }
+
+        .message .product-card .prod-features li {
+            list-style: disc;
+            margin-bottom: 2px;
+        }
+
+        .message .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .message .btn-group .btn-inline {
+            background: #eef2f6;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .message .btn-group .btn-inline:hover {
+            background: #dce1e8;
+        }
+
+        .message .btn-group .btn-inline.primary {
+            background: #e94560;
+            color: white;
+        }
+
+        .message .btn-group .btn-inline.primary:hover {
+            background: #d63851;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e8ecf1;
+            display: none;
+            gap: 4px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing 1.2s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-6px);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-area {
+            padding: 12px 16px 16px 16px;
+            background: white;
+            border-top: 1px solid #e8ecf1;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-row input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e6ec;
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-row input:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+
+        .input-row button {
+            padding: 12px 24px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .input-row button:hover {
+            background: #d63851;
+            transform: scale(1.02);
+        }
+
+        .input-row button:active {
+            transform: scale(0.97);
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-buttons .qbtn {
+            padding: 6px 14px;
+            background: #f1f3f6;
+            border: 1px solid #e2e6ec;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #1e293b;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quick-buttons .qbtn:hover {
+            background: #e2e6ec;
+        }
+
+        .quick-buttons .qbtn:active {
+            background: #d0d5dd;
+        }
+
+        .inline-keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .inline-keyboard .ik-btn {
+            padding: 10px 16px;
+            background: #f1f4f9;
+            border: 1px solid #e2e6ec;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #0f172a;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .inline-keyboard .ik-btn:hover {
+            background: #e6eaf0;
+        }
+
+        .inline-keyboard .ik-btn:active {
+            background: #d5dae3;
+        }
+
+        .inline-keyboard .ik-btn.primary {
+            background: #e94560;
+            color: white;
+            border-color: #e94560;
+        }
+
+        .inline-keyboard .ik-btn.primary:hover {
+            background: #d63851;
+        }
+
+        .inline-keyboard .ik-btn.back {
+            background: #eef2f6;
+            color: #475569;
+        }
+
+        .inline-keyboard .ik-btn.back:hover {
+            background: #e2e6ec;
+        }
+
+        .compare-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .compare-selector .cs-item {
+            padding: 8px 14px;
+            background: #f1f4f9;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #e2e6ec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .compare-selector .cs-item:hover {
+            background: #e6eaf0;
+        }
+
+        .compare-selector .cs-item.selected {
+            background: #e94560;
+            color: white;
+            border-color: #e94560;
+        }
+
+        .compare-selector .cs-item .cs-check {
+            font-weight: 700;
+        }
+
+        .image-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 180px;
+            background: #eef1f5;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 14px;
+            border: 1px dashed #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .app-container {
+                height: 100vh;
+                max-height: none;
+                border-radius: 0;
+                padding: 0;
+            }
+            .app-header {
+                padding: 14px 16px;
+            }
+            .chat-messages {
+                padding: 12px 10px;
+            }
+            .input-area {
+                padding: 8px 10px 12px 10px;
+            }
+            .input-row input {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+            .input-row button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container" id="app">
+        <header class="app-header">
+            <span class="logo">🪑</span>
+            <div>
+                <div class="title">Premium Chairs Concierge</div>
+                <div class="subtitle">Эргономичные кресла будущего</div>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="input-area">
+            <div class="input-row">
+                <input type="text" id="messageInput" placeholder="Напишите сообщение..." />
+                <button id="sendBtn">➤</button>
+            </div>
+            <div class="quick-buttons" id="quickButtons">
+                <span class="qbtn" data-action="menu_products">🪑 Каталог</span>
+                <span class="qbtn" data-action="menu_quiz">🎯 Рекомендация</span>
+                <span class="qbtn" data-action="menu_manager">👤 Менеджер</span>
+                <span class="qbtn" data-action="menu_compare">⚖️ Сравнить</span>
+                <span class="qbtn" data-action="menu_question">❓ Вопрос</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        //  НАСТРОЙКА ПУТЕЙ К ИЗОБРАЖЕНИЯМ
+        // =========================================================================
+
+        // Путь к папке с изображениями (относительно HTML-файла)
+        const IMAGES_PATH = 'images/';
+
+        // =========================================================================
+        //  ДАННЫЕ
+        // =========================================================================
+
+        const PRODUCTS = {
+            "ergoflow": {
+                "id": "ergoflow",
+                "name": "ErgoFlow",
+                "fullName": "ErgoFlow — Флагманский стул",
+                "price": 134990,
+                "image": IMAGES_PATH + 'ergoflow.jpg',
+                "description": "Революционное кресло на базе магнитной левитации (Zero-G), снимает гравитационную нагрузку с позвоночника. Умный материал с памятью формы подстраивается под анатомию за секунды. Встроенные биосенсоры отслеживают уровень стресса и осанку, корректируя поддержку в реальном времени.",
+                "features": ["Магнитная левитация (Zero-G)", "ИИ-адаптация под анатомию", "Биосенсоры стресса и осанки", "Эффект невесомости"],
+                "locations": ["дом", "офис"],
+                "frequencies": ["часто", "весь день"],
+                "priorities": ["поддержка спины", "дизайн"],
+                "budget_min": 100000,
+                "budget_max": 10000000,
+                "keywords": ["спина", "позвоночник", "осанка", "невесомость", "левитация", "стресс", "флагман", "топ", "дорогой", "премиум", "лучший", "биосенсор", "ии", "искусственный интеллект"]
+            },
+            "ergocater": {
+                "id": "ergocater",
+                "name": "ErgoCater",
+                "fullName": "ErgoCater — Интеллектуальная лежанка",
+                "price": 13900,
+                "image": IMAGES_PATH + 'ergocater.jpg',
+                "description": "Умная лежанка, превращающая 20 минут отдыха в полноценный энергетический перезапуск. Оснащена технологией волновой микрорелаксации (HydroWave), иммерсивным звуковым коконом с шумоподавлением, светотерапией (Circadia) и независимым климат-контролем.",
+                "features": ["Волновая микрорелаксация (HydroWave)", "Звуковой кокон с шумоподавлением", "Светотерапия Circadia", "Независимый климат-контроль"],
+                "locations": ["дом"],
+                "frequencies": ["редко", "часто"],
+                "priorities": ["релаксация"],
+                "budget_min": 0,
+                "budget_max": 50000,
+                "keywords": ["сон", "бессонница", "усталость", "выгорание", "отдых", "релакс", "релаксация", "недорого", "дешево", "бюджет", "энергия", "перезагрузка", "стресс"]
+            },
+            "crusta_bloom": {
+                "id": "crusta_bloom",
+                "name": "Crusta Bloom",
+                "fullName": "Crusta Bloom — Офисный стул",
+                "price": 86990,
+                "image": IMAGES_PATH + 'crusta_bloom.jpg',
+                "description": "Рабочее кресло, спинка которого состоит из адаптивных «лепестков» на основе био-ткани. Лепестки автоматически раскрываются для усиления вентиляции при повышении температуры тела и смыкаются для надёжной фиксации поясницы.",
+                "features": ["Адаптивные лепестки спинки", "Дышащая био-ткань", "Автоматическая вентиляция", "Подножка-корни для заземления"],
+                "locations": ["офис", "коворкинг"],
+                "frequencies": ["часто", "весь день"],
+                "priorities": ["поддержка спины"],
+                "budget_min": 50000,
+                "budget_max": 100000,
+                "keywords": ["офис", "работа", "поясница", "вентиляция", "жарко", "потею", "спина", "осанка", "рабочее кресло"]
+            },
+            "crusta_nest": {
+                "id": "crusta_nest",
+                "name": "Crusta Nest",
+                "fullName": "Crusta Nest — Лаунж-кокон",
+                "price": 89900,
+                "image": IMAGES_PATH + 'crusta_nest.jpg',
+                "description": "Глубокое сферическое кресло, обволакивающее тело со всех сторон. Изготовлено из плотного био-войлока, поглощающего до 90% внешних шумов. Встроенный тактильный обогрев имитирует тепло живого существа, снижая уровень кортизола.",
+                "features": ["Звукоизоляция до 90%", "Плотный био-войлок", "Тактильный обогрев", "Снижение уровня кортизола"],
+                "locations": ["дом"],
+                "frequencies": ["часто", "редко"],
+                "priorities": ["релаксация"],
+                "budget_min": 50000,
+                "budget_max": 100000,
+                "keywords": ["шум", "звук", "медитация", "уединение", "тишина", "чтение", "сон", "кортизол", "тепло", "уют", "кокон"]
+            },
+            "crusta_flow": {
+                "id": "crusta_flow",
+                "name": "Crusta Flow",
+                "fullName": "Crusta Flow — Модульный стул",
+                "price": 45990,
+                "image": IMAGES_PATH + 'crusta_flow.jpg',
+                "description": "Лёгкий (4 кг) модульный стул, форма которого напоминает гладкий камень. Не имеет жёсткого каркаса, принимает форму тела любого человека. Магнитные коннекторы позволяют объединять стулья в волнообразные диваны или амфитеатры. Самоочищающееся нано-покрытие.",
+                "features": ["Модульность и магнитные коннекторы", "Бескаркасная конструкция", "Вес всего 4 кг", "Самоочищающееся нано-покрытие"],
+                "locations": ["дом", "офис", "коворкинг"],
+                "frequencies": ["редко", "часто"],
+                "priorities": ["мобильность", "дизайн"],
+                "budget_min": 0,
+                "budget_max": 50000,
+                "keywords": ["легкий", "лёгкий", "мобильный", "переносной", "модульный", "компактный", "недорого", "дешево", "бюджет", "коворкинг", "дизайн", "стиль"]
+            }
+        };
+
+        const PRODUCT_ORDER = ["ergoflow", "ergocater", "crusta_bloom", "crusta_nest", "crusta_flow"];
+
+        const MANAGER_CONTACT = {
+            "name": "Александра, персональный консультант",
+            "username": "@premium_chairs_manager",
+            "phone": "+7 (900) 123-45-67"
+        };
+
+        const QUIZ_STEP_ORDER = ["location", "frequency", "priority", "budget"];
+
+        const QUIZ_QUESTIONS = {
+            "location": {
+                "text": "🏠 Где вы планируете использовать стул?",
+                "options": [
+                    ["Дома", "дом"],
+                    ["В офисе", "офис"],
+                    ["В коворкинге", "коворкинг"]
+                ]
+            },
+            "frequency": {
+                "text": "⏱ Как часто вы будете им пользоваться?",
+                "options": [
+                    ["Редко", "редко"],
+                    ["Часто", "часто"],
+                    ["Весь день", "весь день"]
+                ]
+            },
+            "priority": {
+                "text": "✨ Что для вас важнее всего?",
+                "options": [
+                    ["Поддержка спины", "поддержка спины"],
+                    ["Релаксация", "релаксация"],
+                    ["Мобильность", "мобильность"],
+                    ["Дизайн", "дизайн"]
+                ]
+            },
+            "budget": {
+                "text": "💰 Какой у вас бюджет?",
+                "options": [
+                    ["До 50 000 ₽", "до 50к"],
+                    ["50 000 – 100 000 ₽", "50-100к"],
+                    ["Более 100 000 ₽", "100к+"]
+                ]
+            }
+        };
+
+        const BUDGET_RANGES = {
+            "до 50к": [0, 50000],
+            "50-100к": [50000, 100000],
+            "100к+": [100000, 10000000]
+        };
+
+        const WELCOME_TEXT =
+            '👋 Добро пожаловать в <b>Premium Chairs Concierge</b>.<br><br>' +
+            'Я — ваш персональный консультант по эргономичным креслам будущего. ' +
+            'Помогу подобрать идеальное решение для дома, офиса или коворкинга.<br><br>' +
+            'Выберите, с чего начнём:';
+
+        const HELP_TEXT =
+            'ℹ️ <b>Как со мной работать</b><br><br>' +
+            '• 🪑 «Каталог» — все товары с ценами<br>' +
+            '• ❓ «Вопрос» — напишите свой вопрос своими словами<br>' +
+            '• ⚖️ «Сравнить» — выберите 2–3 модели для сравнения<br>' +
+            '• 🎯 «Рекомендация» — короткий квиз из 4 вопросов<br>' +
+            '• 👤 «Менеджер» — контакты для оформления заказа<br><br>' +
+            'Пользуйтесь кнопками — так я быстрее и точнее помогу с выбором.';
+
+        // =========================================================================
+        //  СОСТОЯНИЕ
+        // =========================================================================
+
+        const state = {
+            mode: null,
+            quizAnswers: {},
+            compareSelected: new Set(),
+            compareMode: false,
+            waitingForInput: false,
+        };
+
+        // =========================================================================
+        //  DOM-ЭЛЕМЕНТЫ
+        // =========================================================================
+
+        const messagesContainer = document.getElementById('chatMessages');
+        const inputField = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const quickButtons = document.getElementById('quickButtons');
+
+        // =========================================================================
+        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // =========================================================================
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
+        }
+
+        function productToHtml(pid, withButtons = true) {
+            const p = PRODUCTS[pid];
+            const features = p.features.map(f => `<li>${f}</li>`).join('');
+            let html = `
+                <div class="product-card">
+                    <img src="${p.image}" alt="${p.fullName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'image-error\\'>🖼️ Изображение не найдено<br><small style=\\'font-size:11px;color:#94a3b8;\\'>${p.image}</small></div>' + this.parentElement.innerHTML" />
+                    <div class="prod-name">${p.fullName}</div>
+                    <div class="prod-price">${formatPrice(p.price)}</div>
+                    <div class="prod-desc">${p.description}</div>
+                    <ul class="prod-features">${features}</ul>
+            `;
+            if (withButtons) {
+                html += `
+                    <div class="btn-group">
+                        <button class="btn-inline primary" data-action="buy_${pid}">💳 Купить</button>
+                        <button class="btn-inline" data-action="menu_products">⬅️ К списку</button>
+                        <button class="btn-inline" data-action="back_main">🏠 Главное меню</button>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        // =========================================================================
+        //  ОТРИСОВКА СООБЩЕНИЙ
+        // =========================================================================
+
+        function addMessage(text, isUser = false, isHtml = true, extraClass = '') {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user' : 'bot'} ${extraClass}`;
+            if (isHtml) {
+                div.innerHTML = text;
+            } else {
+                div.textContent = text;
+            }
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return div;
+        }
+
+        function addBotMessage(text, isHtml = true) {
+            return addMessage(text, false, isHtml);
+        }
+
+        function addUserMessage(text) {
+            return addMessage(text, true, true);
+        }
+
+        function clearMessages() {
+            messagesContainer.innerHTML = '';
+        }
+
+        function showTyping() {
+            typingIndicator.style.display = 'flex';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function getLastBotMessage() {
+            const msgs = messagesContainer.querySelectorAll('.message.bot');
+            return msgs.length > 0 ? msgs[msgs.length - 1] : null;
+        }
+
+        // =========================================================================
+        //  ГЕНЕРАТОРЫ INLINE-КЛАВИАТУР
+        // =========================================================================
+
+        function mainMenuKeyboard() {
+            return `
+                <div class="inline-keyboard">
+                    <button class="ik-btn" data-action="menu_products">🪑 Посмотреть все товары</button>
+                    <button class="ik-btn" data-action="menu_question">❓ Задать вопрос по товару</button>
+                    <button class="ik-btn" data-action="menu_compare">⚖️ Сравнить товары</button>
+                    <button class="ik-btn" data-action="menu_quiz">🎯 Получить рекомендацию</button>
+                    <button class="ik-btn" data-action="menu_manager">👤 Связаться с менеджером</button>
+                    <button class="ik-btn" data-action="menu_help">ℹ️ Помощь</button>
+                </div>
+            `;
+        }
+
+        function productListKeyboard() {
+            let html = '<div class="inline-keyboard">';
+            for (const pid of PRODUCT_ORDER) {
+                const p = PRODUCTS[pid];
+                html += `<button class="ik-btn" data-action="product_${pid}">${p.fullName} — ${formatPrice(p.price)}</button>`;
+            }
+            html += `<button class="ik-btn back" data-action="back_main">⬅️ Главное меню</button>`;
+            html += '</div>';
+            return html;
+        }
+
+        function backToMenuKeyboard() {
+            return `<div class="inline-keyboard"><button class="ik-btn back" data-action="back_main">⬅️ Главное меню</button></div>`;
+        }
+
+        function compareKeyboard(selected) {
+            let html = '<div class="compare-selector">';
+            for (const pid of PRODUCT_ORDER) {
+                const p = PRODUCTS[pid];
+                const isSelected = selected.has(pid);
+                const mark = isSelected ? '✅ ' : '';
+                html += `
+                    <div class="cs-item ${isSelected ? 'selected' : ''}" data-action="cmp_toggle_${pid}">
+                        <span>${mark}${p.fullName}</span>
+                        <span class="cs-check">${isSelected ? '✓' : ''}</span>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            if (selected.size >= 2 && selected.size <= 3) {
+                html += `<div class="inline-keyboard"><button class="ik-btn primary" data-action="cmp_show">⚖️ Сравнить выбранные</button></div>`;
+            }
+            html += `<div class="inline-keyboard"><button class="ik-btn back" data-action="back_main">⬅️ Главное меню</button></div>`;
+            return html;
+        }
+
+        function quizKeyboard(step) {
+            const options = QUIZ_QUESTIONS[step].options;
+            let html = '<div class="inline-keyboard">';
+            for (const [label, value] of options) {
+                html += `<button class="ik-btn" data-action="quiz_${step}_${value}">${label}</button>`;
+            }
+            html += `<button class="ik-btn back" data-action="back_main">⬅️ Главное меню</button>`;
+            html += '</div>';
+            return html;
+        }
+
+        // =========================================================================
+        //  ОСНОВНАЯ ЛОГИКА
+        // =========================================================================
+
+        function handleAction(action) {
+            if (action === 'back_main') {
+                state.mode = null;
+                state.quizAnswers = {};
+                state.compareSelected = new Set();
+                state.compareMode = false;
+                state.waitingForInput = false;
+                const msg = addBotMessage(WELCOME_TEXT, true);
+                msg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+                return;
+            }
+
+            if (action === 'menu_products') {
+                state.mode = null;
+                const msg = addBotMessage('🪑 <b>Каталог кресел премиум-класса</b><br><br>Выберите модель, чтобы увидеть подробности:', true);
+                msg.insertAdjacentHTML('beforeend', productListKeyboard());
+                return;
+            }
+
+            if (action.startsWith('product_')) {
+                const pid = action.replace('product_', '');
+                if (!PRODUCTS[pid]) {
+                    addBotMessage('Товар не найден.');
+                    return;
+                }
+                const msg = addBotMessage('', true);
+                msg.innerHTML = productToHtml(pid, true);
+                return;
+            }
+
+            if (action.startsWith('buy_')) {
+                const pid = action.replace('buy_', '');
+                const p = PRODUCTS[pid];
+                const name = p ? p.fullName : 'выбранный товар';
+                const text =
+                    `🎉 Отличный выбор — <b>${name}</b>!<br><br>` +
+                    `Для оформления заказа свяжитесь с вашим персональным менеджером:<br><br>` +
+                    `👤 ${MANAGER_CONTACT.name}<br>` +
+                    `✉️ ${MANAGER_CONTACT.username}<br>` +
+                    `📞 ${MANAGER_CONTACT.phone}<br><br>` +
+                    `Просто напишите менеджеру название модели — и мы всё организуем.`;
+                const msg = addBotMessage(text, true);
+                msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                return;
+            }
+
+            if (action === 'menu_question') {
+                state.mode = 'question';
+                state.waitingForInput = true;
+                const text =
+                    '❓ Напишите ваш вопрос о креслах в свободной форме — например:<br>' +
+                    '«Что поможет от боли в спине?» или «Ищу что-то для крепкого сна».<br><br>' +
+                    'Я подберу наиболее подходящую модель.';
+                const msg = addBotMessage(text, true);
+                msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                return;
+            }
+
+            if (action === 'menu_compare') {
+                state.mode = 'compare';
+                state.compareMode = true;
+                state.compareSelected = new Set();
+                const msg = addBotMessage('⚖️ Выберите 2–3 модели для сравнения:', true);
+                msg.insertAdjacentHTML('beforeend', compareKeyboard(state.compareSelected));
+                return;
+            }
+
+            if (action.startsWith('cmp_toggle_')) {
+                const pid = action.replace('cmp_toggle_', '');
+                if (!state.compareMode) {
+                    state.mode = 'compare';
+                    state.compareMode = true;
+                    state.compareSelected = new Set();
+                }
+                const selected = state.compareSelected;
+                if (selected.has(pid)) {
+                    selected.delete(pid);
+                } else if (selected.size < 3) {
+                    selected.add(pid);
+                } else {
+                    addBotMessage('⚠️ Можно выбрать не более 3 товаров.');
+                    return;
+                }
+                const lastBotMsg = getLastBotMessage();
+                if (lastBotMsg) {
+                    lastBotMsg.innerHTML = '⚖️ Выберите 2–3 модели для сравнения:';
+                    lastBotMsg.insertAdjacentHTML('beforeend', compareKeyboard(selected));
+                }
+                return;
+            }
+
+            if (action === 'cmp_show') {
+                const selected = state.compareSelected;
+                if (selected.size < 2 || selected.size > 3) {
+                    addBotMessage('⚠️ Выберите от 2 до 3 товаров.');
+                    return;
+                }
+                for (const pid of PRODUCT_ORDER) {
+                    if (selected.has(pid)) {
+                        const msg = addBotMessage('', true);
+                        msg.innerHTML = productToHtml(pid, true);
+                    }
+                }
+                addBotMessage('⚖️ Сравнение завершено', true);
+                const msg = addBotMessage('', true);
+                msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                state.compareSelected = new Set();
+                state.compareMode = false;
+                state.mode = null;
+                return;
+            }
+
+            if (action === 'menu_quiz') {
+                state.mode = 'quiz';
+                state.quizAnswers = {};
+                const firstStep = QUIZ_STEP_ORDER[0];
+                const msg = addBotMessage(QUIZ_QUESTIONS[firstStep].text, true);
+                msg.insertAdjacentHTML('beforeend', quizKeyboard(firstStep));
+                return;
+            }
+
+            if (action.startsWith('quiz_')) {
+                const parts = action.split('_');
+                if (parts.length < 3) return;
+                const step = parts[1];
+                const value = parts.slice(2).join('_');
+                if (!QUIZ_STEP_ORDER.includes(step)) return;
+
+                state.quizAnswers[step] = value;
+
+                const currentIndex = QUIZ_STEP_ORDER.indexOf(step);
+                if (currentIndex + 1 < QUIZ_STEP_ORDER.length) {
+                    const nextStep = QUIZ_STEP_ORDER[currentIndex + 1];
+                    const lastBotMsg = getLastBotMessage();
+                    if (lastBotMsg) {
+                        lastBotMsg.innerHTML = QUIZ_QUESTIONS[nextStep].text;
+                        lastBotMsg.insertAdjacentHTML('beforeend', quizKeyboard(nextStep));
+                    }
+                } else {
+                    const ranked = scoreProducts(state.quizAnswers);
+                    if (ranked.length === 0) {
+                        addBotMessage('😕 Не удалось подобрать товары. Попробуйте ещё раз.');
+                        const msg = addBotMessage('', true);
+                        msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                        return;
+                    }
+                    const topScore = ranked[0][1];
+                    const topProducts = ranked.filter(([pid, score]) => score === topScore && score > 0).map(([pid]) => pid);
+                    const finalProducts = topProducts.length > 0 ? topProducts.slice(0, 2) : [ranked[0][0]];
+
+                    const lastBotMsg = getLastBotMessage();
+                    if (lastBotMsg) {
+                        lastBotMsg.remove();
+                    }
+
+                    for (const pid of finalProducts) {
+                        const msg = addBotMessage('', true);
+                        msg.innerHTML = productToHtml(pid, true);
+                    }
+                    addBotMessage('🎯 Это лучшие варианты по вашему запросу!', true);
+                    const msg = addBotMessage('', true);
+                    msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                    state.quizAnswers = {};
+                    state.mode = null;
+                }
+                return;
+            }
+
+            if (action === 'menu_manager') {
+                const text =
+                    `👤 <b>Ваш персональный консультант</b><br><br>` +
+                    `${MANAGER_CONTACT.name}<br>` +
+                    `✉️ ${MANAGER_CONTACT.username}<br>` +
+                    `📞 ${MANAGER_CONTACT.phone}<br><br>` +
+                    `Готовы ответить на любые вопросы и оформить заказ в удобное для вас время.`;
+                const msg = addBotMessage(text, true);
+                msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                return;
+            }
+
+            if (action === 'menu_help') {
+                const msg = addBotMessage(HELP_TEXT, true);
+                msg.insertAdjacentHTML('beforeend', backToMenuKeyboard());
+                return;
+            }
+
+            const fallbackMsg = addBotMessage('Не удалось распознать действие. Возвращаю в главное меню.', true);
+            fallbackMsg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+        }
+
+        // =========================================================================
+        //  ЛОГИКА КВИЗА
+        // =========================================================================
+
+        function scoreProducts(answers) {
+            const budgetKey = answers.budget;
+            const budgetRange = BUDGET_RANGES[budgetKey] || [0, 10000000];
+
+            const scores = {};
+            for (const [pid, p] of Object.entries(PRODUCTS)) {
+                let score = 0;
+                if (answers.location && p.locations.includes(answers.location)) score += 1;
+                if (answers.frequency && p.frequencies.includes(answers.frequency)) score += 1;
+                if (answers.priority && p.priorities.includes(answers.priority)) score += 2;
+                if (!(budgetRange[1] < p.budget_min || budgetRange[0] > p.budget_max)) score += 1;
+                scores[pid] = score;
+            }
+
+            return Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        }
+
+        function matchProductByKeywords(text) {
+            const textLower = text.toLowerCase();
+            let bestPid = null;
+            let bestScore = 0;
+            for (const [pid, p] of Object.entries(PRODUCTS)) {
+                let score = 0;
+                for (const kw of p.keywords) {
+                    if (textLower.includes(kw)) score++;
+                }
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestPid = pid;
+                }
+            }
+            return bestScore > 0 ? bestPid : null;
+        }
+
+        // =========================================================================
+        //  ОБРАБОТКА ТЕКСТОВЫХ СООБЩЕНИЙ
+        // =========================================================================
+
+        function handleUserText(text) {
+            if (!text.trim()) return;
+            addUserMessage(text);
+
+            if (state.mode === 'question') {
+                const pid = matchProductByKeywords(text);
+                if (pid) {
+                    const msg = addBotMessage('', true);
+                    msg.innerHTML = productToHtml(pid, true);
+                    addBotMessage('🔍 Судя по вашему вопросу, вам подойдёт эта модель!', true);
+                    const menuMsg = addBotMessage('', true);
+                    menuMsg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+                } else {
+                    const textMsg =
+                        '🤔 Не удалось однозначно подобрать модель по вашему вопросу.<br><br>' +
+                        'Попробуйте описать подробнее (например, упомянуть «спина», «сон», ' +
+                        '«офис», «мобильность») или пройдите короткую рекомендацию 🎯, ' +
+                        'либо свяжитесь с менеджером — он поможет разобраться.';
+                    const msg = addBotMessage(textMsg, true);
+                    msg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+                }
+                state.mode = null;
+                state.waitingForInput = false;
+                return;
+            }
+
+            if (state.mode === 'compare') {
+                let foundPid = null;
+                const lower = text.toLowerCase();
+                for (const [pid, p] of Object.entries(PRODUCTS)) {
+                    if (p.fullName.toLowerCase().includes(lower) || lower.includes(p.name.toLowerCase())) {
+                        foundPid = pid;
+                        break;
+                    }
+                }
+                if (foundPid) {
+                    handleAction(`cmp_toggle_${foundPid}`);
+                } else {
+                    addBotMessage('Не нашли такой товар. Выберите из списка.');
+                }
+                return;
+            }
+
+            if (state.mode === 'quiz') {
+                addBotMessage('Пожалуйста, используйте кнопки для ответа на вопросы квиза.');
+                return;
+            }
+
+            const fallback = '🙏 Пожалуйста, пользуйтесь кнопками меню — так я смогу помочь точнее.';
+            const msg = addBotMessage(fallback, true);
+            msg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+        }
+
+        // =========================================================================
+        //  ОБРАБОТЧИКИ СОБЫТИЙ
+        // =========================================================================
+
+        messagesContainer.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+            const action = target.dataset.action;
+            e.preventDefault();
+            handleAction(action);
+        });
+
+        quickButtons.addEventListener('click', (e) => {
+            const target = e.target.closest('.qbtn');
+            if (!target) return;
+            const action = target.dataset.action;
+            if (action) {
+                handleAction(action);
+            }
+        });
+
+        function sendMessage() {
+            const text = inputField.value.trim();
+            if (text) {
+                inputField.value = '';
+                handleUserText(text);
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // =========================================================================
+        //  ИНИЦИАЛИЗАЦИЯ
+        // =========================================================================
+
+        function init() {
+            clearMessages();
+            const msg = addBotMessage(WELCOME_TEXT, true);
+            msg.insertAdjacentHTML('beforeend', mainMenuKeyboard());
+            inputField.focus();
+        }
+
+        init();
+
+        console.log('🪑 Premium Chairs Concierge Web App запущен!');
+        console.log('📁 Изображения загружаются из папки:', IMAGES_PATH);
+    </script>
+
+</body>
+</html>
